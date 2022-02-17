@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+  hr-eureka-server:
+    image: hr-eureka-server
+    build: 
+      dockerfile: Dockerfile
+      context: ./hr-eurka-server
+    environment:
+      - 
+    ports:
+      -8761:8761
+         
+  hr-api-gateway-zuul:
+    image: hr-api-gateway-zuul
+    build: 
+      dockerfile: Dockerfile
+      context: ./hr-api-gateway-zuul
+    environment:
+      - name=value
+    depends_on: 
+      - hr-eureka-server
+    ports:
+      -8765:8765
+
+        
+  hr-payroll:
+    image: hr-payroll
+    build:   
+      dockerfile: Dockerfile 
+      context: ./hr-payroll
+
+  hr-worker:
+    image: hr-worker
+    build: 
+      dockerfile: Dockerfile
+      context: ./hr-worker                   
+    environment:
+      - # user e senha do h2? 
+    depends_on: 
+      - hr-eureka-server    
+
+   
+# docker-compose up -d --scale hr-worker=5 --scale hr-payroll=2
+  
+
+
