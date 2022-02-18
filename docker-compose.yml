@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   hr-eureka-server:
     image: hr-eureka-server
@@ -13,15 +13,11 @@ services:
     build: 
       dockerfile: Dockerfilegit status
       context: ./hr-api-gateway-zuul
-    environment:
-      - #está pedindo senha
     depends_on: 
       - hr-eureka-server
     ports:
-      -8765:8765
+      -8765:8080
 
-  # Apenas o container do Api Gateway deverá ter sua porta exposta na porta 8080. Para tal, deve ser utilizada a porta no Api Gateway: 8765; 
-        
   hr-payroll:
     image: hr-payroll
     build:   
@@ -29,26 +25,17 @@ services:
       context: ./hr-payroll
     depends_on: 
       - hr-eureka-server
-    ports:
+    restart: on-failure
 
   hr-worker:
     image: hr-worker
     build: 
       dockerfile: Dockerfile
       context: ./hr-worker                   
-    environment:
-      - # user e senha do h2? 
     depends_on: 
       - hr-eureka-server  
-    ports:  
+    restart: on-failure  
 
 # Para o serviço que possui comunicação com o banco de dados em memória (H2), deverão ser iniciados 5 instâncias; 
 # Para o serviço que não possui comunicação com o banco de dados memória (H2), deverão ser iniciados 2 instâncias; 
 # docker-compose up -d --scale hr-worker=5 --scale hr-payroll=2
-  
-# Dicas 
-# O comando: docker-compose up --build --force-recreate pode ser utilizado para forçar a recriação das imagens sem utilização de cache; 
-# O Argumento depends_on pode ser utilizado para controlar a ordem de compilação e execução dos containers;
-
-
-
